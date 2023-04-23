@@ -8,11 +8,23 @@ import { type RouterOutputs, api } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingSection } from "~/components/Loading";
+import { useState } from "react";
 
 dayjs.extend(relativeTime);
 
 const CreateTweetWizard = () => {
   const { user } = useUser();
+
+  const [input, setInput] = useState("");
+
+  const ctx = api.useContext();
+
+  const { mutate, isLoading: isTweeting } = api.tweets.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      void ctx.tweets.invalidate();
+    },
+  });
 
   if (!user) return null;
 
@@ -28,7 +40,14 @@ const CreateTweetWizard = () => {
       <input
         placeholder="What's happening?"
         className="grow bg-transparent outline-none"
+        value={input}
+        onChange={(evt) => setInput(evt.target.value)}
+        disabled={isTweeting}
       />
+
+      <button onClick={() => mutate({ content: input })} disabled={isTweeting}>
+        Tweet
+      </button>
     </div>
   );
 };

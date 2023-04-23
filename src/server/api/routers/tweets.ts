@@ -1,10 +1,18 @@
 import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { z } from "zod";
+import {
+  createTRPCRouter,
+  privateProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 
 export const tweetsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const tweets = await ctx.prisma.tweet.findMany({ take: 100 });
+    const tweets = await ctx.prisma.tweet.findMany({
+      take: 100,
+      orderBy: [{ createdAt: "desc" }],
+    });
     const users = (
       await clerkClient.users.getUserList({
         userId: tweets.map((tweet) => tweet.authorId),
@@ -28,8 +36,26 @@ export const tweetsRouter = createTRPCRouter({
 
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: "Author for post not found",
+        message: "Author for tweet not found",
       });
     });
   }),
+  create: privateProcedure
+    .input(
+      z.object({
+        content: z.string().min(1).max(255),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const authorId = ctx.userId;
+
+      const tweet = await ctx.prisma.tweet.create({
+        data: {
+          authorId,
+          content: input.content,
+        },
+      });
+
+      return tweet;
+    }),
 });
