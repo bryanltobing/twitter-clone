@@ -18,5 +18,15 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.clerk.dev",
+        port: "",
+        pathname: "/oauth_github/**",
+      },
+    ],
+  },
 };
 export default config;
