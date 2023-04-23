@@ -7,8 +7,9 @@ import { type RouterOutputs, api } from "~/utils/api";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { LoadingSection } from "~/components/Loading";
+import { LoadingSection, Spinner } from "~/components/Loading";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 dayjs.extend(relativeTime);
 
@@ -24,9 +25,31 @@ const CreateTweetWizard = () => {
       setInput("");
       void ctx.tweets.invalidate();
     },
+    onError: (err) => {
+      if (err.data?.zodError) {
+        const errorMessage = err.data.zodError.fieldErrors.content?.[0];
+        if (errorMessage) {
+          toast.error(errorMessage);
+        }
+        return;
+      }
+
+      const errorMessage = err.shape?.message;
+      if (errorMessage) {
+        toast.error(errorMessage);
+      } else {
+        toast.error("Something went wrong. Please try again later.");
+      }
+    },
   });
 
   if (!user) return null;
+
+  const handleSubmitTweet = () => {
+    if (input) {
+      mutate({ content: input });
+    }
+  };
 
   return (
     <div className="flex gap-3">
@@ -43,10 +66,16 @@ const CreateTweetWizard = () => {
         value={input}
         onChange={(evt) => setInput(evt.target.value)}
         disabled={isTweeting}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSubmitTweet();
+          }
+        }}
       />
 
-      <button onClick={() => mutate({ content: input })} disabled={isTweeting}>
-        Tweet
+      <button onClick={handleSubmitTweet} disabled={isTweeting || !input}>
+        {isTweeting ? <Spinner size={20} /> : "Tweet"}
       </button>
     </div>
   );
