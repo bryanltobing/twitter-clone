@@ -148,7 +148,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex h-screen justify-center">
-        <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
+        <div className="h-full w-full overflow-auto border-x border-slate-400 md:max-w-2xl">
           {isLoaded && (
             <div className="border-b border-slate-400 p-4">
               {!isSignedIn ? <SignInButton /> : <CreateTweetWizard />}
