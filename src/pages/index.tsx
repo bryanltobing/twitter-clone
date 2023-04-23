@@ -53,7 +53,7 @@ const TweetView = (props: TweetWithAuthor) => {
           <span>{`@${author.username}`}</span>·
           <span className="font-thin">{dayjs(tweet.createdAt).fromNow()}</span>
         </div>
-        <span>{tweet.content}</span>
+        <span className="text-xl">{tweet.content}</span>
       </div>
     </div>
   );
