@@ -30,9 +30,17 @@ export const TweetView = (props: TweetViewProps) => {
             href={`/${author.username}`}
             className="hover:font-bold hover:text-white"
           >
-            <span>{`@${author.username}`}</span>·
+            <span>{`@${author.username}`}</span>
           </Link>
-          <span className="font-thin">{dayjs(tweet.createdAt).fromNow()}</span>
+          ·
+          <Link
+            href={`/${author.username}/status/${tweet.id}`}
+            className="hover:font-bold hover:text-white"
+          >
+            <span className="font-thin">
+              {dayjs(tweet.createdAt).fromNow()}
+            </span>
+          </Link>
         </div>
         <span className="text-xl">{tweet.content}</span>
       </div>

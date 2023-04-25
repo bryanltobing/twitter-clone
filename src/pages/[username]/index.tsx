@@ -1,4 +1,3 @@
-import { createServerSideHelpers } from "@trpc/react-query/server";
 import type {
   GetStaticPathsResult,
   GetStaticPropsContext,
@@ -7,28 +6,22 @@ import type {
 import Head from "next/head";
 import Image from "next/image";
 
-import superjson from "superjson";
 import { LoadingSection } from "~/components/Loading";
 import { TweetView } from "~/components/TweetView";
 import { PageLayout } from "~/components/layout";
-import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
+import { serverSideHelpers } from "~/server/helpers/serverSideHelpers";
 import { api } from "~/utils/api";
 
 export async function getStaticProps(
   context: GetStaticPropsContext<{ username: string }>
 ) {
-  const helpers = createServerSideHelpers({
-    router: appRouter,
-    ctx: { prisma, userId: null },
-    transformer: superjson,
-  });
   const username = context.params?.username as string;
 
-  await helpers.profile.getUserByUsername.prefetch({ username });
+  await serverSideHelpers.profile.getUserByUsername.prefetch({ username });
+
   return {
     props: {
-      trpcState: helpers.dehydrate(),
+      trpcState: serverSideHelpers.dehydrate(),
       username,
     },
   };
