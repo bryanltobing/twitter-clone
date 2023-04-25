@@ -77,6 +77,15 @@ export const tweetsRouter = createTRPCRouter({
         },
       };
     }),
+  getAllByAuthorId: publicProcedure
+    .input(z.object({ authorId: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.prisma.tweet.findMany({
+        where: { authorId: input.authorId },
+        take: 100,
+        orderBy: [{ createdAt: "desc" }],
+      });
+    }),
   create: privateProcedure
     .input(
       z.object({

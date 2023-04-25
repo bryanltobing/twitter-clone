@@ -8,6 +8,8 @@ import Head from "next/head";
 import Image from "next/image";
 
 import superjson from "superjson";
+import { LoadingSection } from "~/components/Loading";
+import { TweetView } from "~/components/TweetView";
 import { PageLayout } from "~/components/layout";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
@@ -50,6 +52,19 @@ export default function ProfilePage(
     return <p>No data found</p>;
   }
 
+  const { data: tweets = [], isLoading: isLoadingTweets } =
+    api.tweets.getAllByAuthorId.useQuery({
+      authorId: data.id,
+    });
+
+  if (isLoadingTweets) {
+    return <LoadingSection />;
+  }
+
+  if (!tweets.length) {
+    return <p>User has not tweet any tweet</p>;
+  }
+
   return (
     <>
       <Head>
@@ -64,11 +79,17 @@ export default function ProfilePage(
           alt={`${data.username}'s profile pic`}
           width={128}
           height={128}
-          className="-mt-16 ml-8 rounded-full border-2 border-black "
+          className="-mt-16 ml-8 rounded-full border-2 border-black bg-black"
         />
 
         <div className="border-b border-slate-400 p-4">
           <h1 className="text-2xl font-bold">{`@${data?.username}`}</h1>
+        </div>
+
+        <div className="flex flex-col">
+          {tweets.map((tweet) => (
+            <TweetView tweet={tweet} author={data} key={tweet.id} />
+          ))}
         </div>
       </PageLayout>
     </>
