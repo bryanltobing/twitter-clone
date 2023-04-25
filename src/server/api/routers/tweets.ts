@@ -8,6 +8,7 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 // create a new ratelimiter, that allows 3 requests per 1 minute
 const ratelimit = new Ratelimit({
@@ -33,11 +34,7 @@ export const tweetsRouter = createTRPCRouter({
         userId: tweets.map((tweet) => tweet.authorId),
         limit: 100,
       })
-    ).map((user) => ({
-      id: user.id,
-      username: user.username,
-      profileImageUrl: user.profileImageUrl,
-    }));
+    ).map(filterUserForClient);
 
     return tweets.map((tweet) => {
       const author = users.find((user) => user.id === tweet.authorId);
@@ -55,6 +52,31 @@ export const tweetsRouter = createTRPCRouter({
       });
     });
   }),
+  getOne: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const tweet = await ctx.prisma.tweet.findFirst({
+        where: { id: input.id },
+      });
+
+      if (!tweet) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Hmm. You seems lost. There is not tweet here",
+        });
+      }
+
+      const user = await clerkClient.users.getUser(tweet.authorId);
+
+      return {
+        tweet,
+        author: {
+          id: user.id,
+          username: user.username || "Not found",
+          profileImageUrl: user.profileImageUrl,
+        },
+      };
+    }),
   create: privateProcedure
     .input(
       z.object({
