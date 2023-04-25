@@ -1,5 +1,5 @@
 import { clerkClient } from "@clerk/nextjs/server";
-import { Tweet } from "@prisma/client";
+import type { Tweet } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";

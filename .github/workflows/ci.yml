@@ -7,9 +7,9 @@ on:
     branches: [main]
 
 env:
-  DATABASE_URL: "ci"
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "ci"
-  CLERK_SECRET_KEY: "ci"
+  DATABASE_URL: "https://fake.com"
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "https://fake.com"
+  CLERK_SECRET_KEY: "https://fake.com"
 
 jobs:
   build:
@@ -18,9 +18,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Install Dependencies
         run: npm install
+
       - name: Typecheck
         run: npm run typecheck
+
       - name: Lint
         run: npm run lint
+
+      - name: Print Environment Variable
+        run: echo $MY_ENV_VAR
