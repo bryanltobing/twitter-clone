@@ -1,7 +1,8 @@
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import type {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
+  GetStaticPathsResult,
+  GetStaticPropsContext,
+  InferGetStaticPropsType,
 } from "next";
 
 import superjson from "superjson";
@@ -9,8 +10,8 @@ import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import { api } from "~/utils/api";
 
-export async function getServerSideProps(
-  context: GetServerSidePropsContext<{ username: string }>
+export async function getStaticProps(
+  context: GetStaticPropsContext<{ username: string }>
 ) {
   const helpers = createServerSideHelpers({
     router: appRouter,
@@ -27,8 +28,16 @@ export async function getServerSideProps(
     },
   };
 }
+
+export function getStaticPaths(): GetStaticPathsResult {
+  return {
+    paths: ["/bryanltobing"],
+    fallback: "blocking",
+  };
+}
+
 export default function ProfilePage(
-  props: InferGetServerSidePropsType<typeof getServerSideProps>
+  props: InferGetStaticPropsType<typeof getStaticProps>
 ) {
   const { username } = props;
   // This query will be immediately available as it's prefetched.
