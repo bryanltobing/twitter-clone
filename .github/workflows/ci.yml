@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DATABASE_URL: "ci"
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "ci"
+  CLERK_SECRET_KEY: "ci"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: npm install
+      - name: Typecheck
+        run: npm typecheck
+      - name: Lint
+        run: npm run lint
