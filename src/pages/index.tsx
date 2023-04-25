@@ -10,6 +10,7 @@ import { LoadingSection, Spinner } from "~/components/Loading";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { TweetView } from "~/components/TweetView";
+import { PageLayout } from "~/components/layout";
 
 dayjs.extend(relativeTime);
 
@@ -115,19 +116,14 @@ const Home: NextPage = () => {
   api.tweets.getAll.useQuery();
 
   return (
-    <>
-      <main className="flex h-screen justify-center">
-        <div className="h-full w-full overflow-auto border-x border-slate-400 md:max-w-2xl">
-          {isLoaded && (
-            <div className="border-b border-slate-400 p-4">
-              {!isSignedIn ? <SignInButton /> : <CreateTweetWizard />}
-            </div>
-          )}
-
-          <Feed />
+    <PageLayout>
+      {isLoaded && (
+        <div className="border-b border-slate-400 p-4">
+          {!isSignedIn ? <SignInButton /> : <CreateTweetWizard />}
         </div>
-      </main>
-    </>
+      )}
+      <Feed />
+    </PageLayout>
   );
 };
 

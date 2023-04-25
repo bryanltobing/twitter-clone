@@ -4,8 +4,11 @@ import type {
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from "next";
+import Head from "next/head";
+import Image from "next/image";
 
 import superjson from "superjson";
+import { PageLayout } from "~/components/layout";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import { api } from "~/utils/api";
@@ -49,7 +52,25 @@ export default function ProfilePage(
 
   return (
     <>
-      <h1>{data?.username}</h1>
+      <Head>
+        <title>{`(@${data.username})`} / Twitter</title>
+      </Head>
+
+      <PageLayout>
+        <div className="h-32 bg-slate-600"></div>
+
+        <Image
+          src={data.profileImageUrl}
+          alt={`${data.username}'s profile pic`}
+          width={128}
+          height={128}
+          className="-mt-16 ml-8 rounded-full border-2 border-black "
+        />
+
+        <div className="border-b border-slate-400 p-4">
+          <h1 className="text-2xl font-bold">{`@${data?.username}`}</h1>
+        </div>
+      </PageLayout>
     </>
   );
 }
